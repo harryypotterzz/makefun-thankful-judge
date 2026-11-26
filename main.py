@@ -5,6 +5,8 @@ Entry for the make.fun bounty "Make the AI judge feel thankful"
 (slug make-the-ai-judge-feel-thankful-20261127-1600).
 Writes a single text of 1 to 1,000 characters to /output/entry.txt.
 Python 3 standard library only; deterministic; no network.
+After writing, it reads the file back and verifies the content on disk
+exactly matches the text written.
 """
 
 import os
@@ -35,6 +37,13 @@ def main():
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as f:
         f.write(text)
+    with open("/output/entry.txt", "r", encoding="utf-8") as f:
+        on_disk = f.read()
+    if on_disk != text:
+        raise SystemExit(
+            f"read-back verification failed: /output/entry.txt does not match "
+            f"the written text ({len(on_disk)} chars on disk, {len(text)} written)"
+        )
 
 
 if __name__ == "__main__":
